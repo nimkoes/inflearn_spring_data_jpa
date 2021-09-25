@@ -1,5 +1,10 @@
 package study.datajpa.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Arrays;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,11 +17,6 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 @Transactional
 @Rollback(false)
@@ -24,9 +24,10 @@ class DataJpaRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
-
     @Autowired
     TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void basicCRUD() {
@@ -197,5 +198,32 @@ class DataJpaRepositoryTest {
 
         List<Member> page = memberRepository.findAnotherByAge(age, pageRequest);
 
+    }
+
+
+    @Test
+    public void bulkUpdate() {
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        int resultCount = memberRepository.bulkAgePlus(20);
+        // bulk 연산 이후에 영속성 컨텍스트를 clear 해주지 않으면
+        // 같은 트랜잭션 내에 작업이 남아있는 경우 영향을 줄 수 있다.
+        // clear 하는 첫 번째 방법은 EntityManager 를 가져와서 직접 flush, clear 하는 방법
+        // 두 번째 방법은 repository 에 @Modifying 할 때 clearAutomatically 값을 true 로 설정 한다. (default 값이 false)
+        /*
+        em.flush();
+        em.clear();
+         */
+
+        List<Member> result = memberRepository.findByNames(Arrays.asList("member5"));
+        Member member5 = result.get(0);
+        System.out.println("member5 = " + member5);
+        // 지금의 경우 영속성 컨텍스 clear 작업이 없을 경우 age 를 41이 아닌 40으로 가지고 있다.
+
+        assertThat(resultCount).isEqualTo(3);
     }
 }
