@@ -253,5 +253,17 @@ class DataJpaRepositoryTest {
             System.out.println("member.team = " + member.getTeam().getName());
         }
 
+        em.flush();
+        em.clear();
+        System.out.println("============================================================================================================================================");
+
+        // fetch join 으로 N+1 문제 해결
+        List<Member> memberFetchJoin = memberRepository.findMemberFetchJoin();
+        for (Member member : memberFetchJoin) {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.teamClass = " + member.getTeam().getClass());
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
+
     }
 }
