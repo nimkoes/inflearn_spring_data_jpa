@@ -246,6 +246,8 @@ class DataJpaRepositoryTest {
         em.clear();
 
         // LAZY 로딩을 하기 때문에 fetch join 하지 않으면 N+1 문제 발생, team 조회 할 때마다 추가 쿼리 실행
+        // repository 에서 findAll method Override.
+        // @EntityGraph(attributePaths = {"team"}) 작성해서 N+1 문제 해결
         List<Member> members = memberRepository.findAll();
         for (Member member : members) {
             System.out.println("member = " + member.getUsername());
