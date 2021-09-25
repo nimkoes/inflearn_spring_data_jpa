@@ -1,13 +1,14 @@
 package study.datajpa.repository;
 
+import java.util.Collection;
+import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
-
-import java.util.Collection;
-import java.util.List;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
@@ -24,5 +25,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("select m from Member m where m.username in :names")
     List<Member> findByNames(@Param("names") Collection<String> names);
+
+    Page<Member> findByAge(int age, Pageable pageable);
+
+    List<Member> findAnotherByAge(int age, Pageable pageable);
+
+    // count query 분리하는 방법 (성능이슈)
+    @Query(value = "select m from Member m left join m.team t", countQuery = "select count(m) from Member m")
+    Page<Member> findOtherByAge(int age, Pageable pageable);
 
 }
