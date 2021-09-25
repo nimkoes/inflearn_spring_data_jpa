@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "username", "age"})
 public class Member {
 
@@ -26,4 +25,6 @@ public class Member {
         this.team = team;
         team.getMembers().add(this);
     }
+
+
 }
