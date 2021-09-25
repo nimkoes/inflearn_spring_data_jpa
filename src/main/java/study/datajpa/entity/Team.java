@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @ToString(of = {"id", "name"})
 public class Team {
 
@@ -20,4 +21,8 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
+
+    public Team(String name) {
+        this.name = name;
+    }
 }

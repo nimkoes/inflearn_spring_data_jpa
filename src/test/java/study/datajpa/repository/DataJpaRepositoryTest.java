@@ -226,4 +226,32 @@ class DataJpaRepositoryTest {
 
         assertThat(resultCount).isEqualTo(3);
     }
+
+    @Test
+    public void findMemberLazy() {
+        // member1 -> teamA
+        // member2 -> teamB
+
+        Team tramA = new Team("tramA");
+        Team tramB = new Team("tramB");
+        teamRepository.save(tramA);
+        teamRepository.save(tramB);
+
+        Member member1 = new Member("member1", 10, tramA);
+        Member member2 = new Member("member2", 10, tramB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        // LAZY 로딩을 하기 때문에 fetch join 하지 않으면 N+1 문제 발생, team 조회 할 때마다 추가 쿼리 실행
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.teamClass = " + member.getTeam().getClass());
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
+
+    }
 }
