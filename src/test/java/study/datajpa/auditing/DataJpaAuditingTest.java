@@ -8,22 +8,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
-import study.datajpa.repository.MemberJpaRepository;
+import study.datajpa.repository.MemberRepository;
 
 @SpringBootTest
 @Transactional
 @Rollback(false)
-public class JpaAuditingTest {
+public class DataJpaAuditingTest {
 
     @Autowired
-    MemberJpaRepository memberJpaRepository;
+    MemberRepository memberRepository;
     @PersistenceContext
     EntityManager em;
 
     @Test
-    public void jpaBaseEntity() throws Exception {
+    public void baseEntity() throws Exception {
         Member member = new Member("member1", 20);
-        memberJpaRepository.save(member);   // @PrePersist
+        memberRepository.save(member);   // @PrePersist
 
         Thread.sleep(1000);
         member.setUsername("member2");
@@ -31,10 +31,12 @@ public class JpaAuditingTest {
         em.flush();
         em.clear();
 
-        Member findMember = memberJpaRepository.findById(member.getId()).get();
+        Member findMember = memberRepository.findById(member.getId()).get();
 
         System.out.println("findMember create = " + findMember.getCreatedDate());
-//        System.out.println("findMember update = " + findMember.getUpdatedDate());
+        System.out.println("findMember update = " + findMember.getLastModifiedDate());
+        System.out.println("findMember create by = " + findMember.getCreatedBy());
+        System.out.println("findMember update by = " + findMember.getLastModifiedBy());
 
     }
 }

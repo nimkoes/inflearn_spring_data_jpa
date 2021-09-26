@@ -1,15 +1,23 @@
 package study.datajpa.entity;
 
-import lombok.*;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString(of = {"id", "username", "age"})
-public class Member extends JpaBaseEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue
